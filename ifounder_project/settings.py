@@ -26,7 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'crispy_forms',
-    'azure_content.apps.AzureContentConfig', 
+    'courses.apps.CoursesConfig', 
     
 ]
 
@@ -107,8 +107,8 @@ CRISPY_TEMPLATE_PACK ='bootstrap4'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'  
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-STATICFILES_DIRS = (str(BASE_DIR.joinpath('azure_content/static')),)
-STATIC_URL = '/azure_content/static/'
+STATICFILES_DIRS = (str(BASE_DIR.joinpath('courses/static')),)
+STATIC_URL = '/courses/static/'
 
 
 

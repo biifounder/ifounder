@@ -8,25 +8,25 @@ from .models import *
 class HomeView(ListView):
     context_object_name = 'project_list'
     model = Project
-    template_name = "azure_content/home.html"
+    template_name = "courses/home.html"
 
 class AboutView(TemplateView):
-    template_name = "azure_content/about.html"
+    template_name = "courses/about.html"
 
 class ProjectCreateView(CreateView):
     model = Project
     fields = ['name', 'description']
-    template_name = "azure_content/create.html"
+    template_name = "courses/create.html"
     success_url ="/"
 
 class ProjectEditView(UpdateView):
     model = Project
     fields = ['name','description']
-    template_name = "azure_content/create.html"
+    template_name = "courses/create.html"
     success_url ="/"
 
 class ProjectDeleteView(DeleteView):
     model = Project
-    template_name = "azure_content/delete.html"
+    template_name = "courses/delete.html"
     fields = ['name']
     success_url ="/"
