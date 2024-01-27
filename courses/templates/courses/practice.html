@@ -1,0 +1,407 @@
+{% extends 'courses/main.html' %}
+
+{% block content %}
+
+
+
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz</title>
+    <!-- Google Font -->
+    <link  href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+
+    <style>   
+
+    .question {
+      padding-right: 1rem;
+      padding-top: 1rem;
+      margin-bottom: 1.25em;
+      font-family: 'Amiri', serif;
+      color: red;
+    }
+
+    .option, .move, .flag, .submit, .key {
+      color: black;
+      font-size: 1em;
+      width: 100%;
+      padding: 1.2em;
+      text-align: center;
+      background: transparent;
+      border: 1px solid #25252b;
+      border-radius: 0.3em;
+    }
+    .move {
+      width: 20%; 
+    }
+    .submit {
+      width: 42%; 
+    }
+    .option:hover, .move:hover, .flag:hover, .submit:hover, .key:hover, a:hover {
+      background-color: #9d9db6;
+    }
+    a:link{
+      width:30px; 
+      font-size:5px
+    }
+    .hide {
+        display: none;
+    }
+    .incorrect {
+        background-color: #ffdde0;
+        border-color: #d32f2f;
+    }
+    .correct {
+        background-color: #e7f6d5;
+        border-color: #689f38;
+    }
+    .selected {
+      background-color: #969696;
+      border-color: #000000;
+    }
+    .flagged {
+      background-color: rgb(134, 104, 243);
+    }    
+    .answered {
+      background-color: #c3bff8;
+    }
+    .bulb {
+      background-color: #000000;
+      color: #ffffff;
+    }
+    </style>
+
+
+</head>
+
+<body>
+    {% if purpose == 'pract' %}  
+      <p style="color:blue; font-size:30">تدريب على: {{object.name}}</p>
+      {% if not reg %}
+        <p style="text-align:right">يتم عرض عدد محدود من الأسئلة في النسخة التجريبية</p>
+      {% endif %}
+    {% else %}
+      <p style="color:blue; font-size:30">اختبار في: {{object.name}}</p>
+    {% endif %}
+    <div class="box" style="text-align:right;" id="display">
+      <div id="kcontainer"></div>
+      <p class="result hide" id="result">هذه درجتك في أسئلة الاختيار من متعدد. وقد ترك تقييم الإجابات القصيرة لك.</p>
+      <div class="box" style="width:25%; text-align:center;" id="scontainer"></div>
+      <div id="container"></div>                       
+    </div>
+    <div class="container">
+      <button class="move" id="back" onclick="backQues()">السابق</button>     
+      <button class="move" id="next" onclick="nextQues()">التالي</button>   <br>
+      <button class="move hide" style="width:42%" id="report" onclick="endTest()">النتيجة</button> 
+      <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="submitted" id="submitted">           
+          {% if purpose == 'pract' %}
+            <button class="submit" type="submit" onclick="Done()">انتهيت</button>
+          {% else %}
+            <button class="submit hide" type="submit" id="submit" onclick="Done()">إرسال</button>
+          {% endif %}
+      </form>
+    </div>
+
+
+    <script>
+        let purpose = '{{purpose}}';
+        var questions = JSON.parse("{{questions|escapejs}}"); 
+        let qL = questions.length;
+        let quizContainer = document.getElementById("container");
+        let scoreContainer = document.getElementById("scontainer");
+        let keyContainer = document.getElementById("kcontainer");
+        let displayContainer = document.getElementById("display");
+        let scoreDiv = document.getElementById("score");
+        let questionList = document.getElementsByClassName("qcontainer");   
+        let keys = document.getElementsByClassName("key");
+        let answers = document.getElementsByClassName("answer");    
+        let hints = document.getElementsByClassName("hint");  
+        let videos = document.getElementsByClassName("video");   
+        let flags = document.getElementsByClassName("flag");  
+        let submitted = document.getElementById("submitted");
+        let totalScore = 0;       
+        var qC;
+
+        let div = document.createElement("div");  
+        for (j=0; j<qL; j++){
+          div.innerHTML += `<button class="key" style="width:9%" onclick="toQuizDisplay(this)">${j+1}</button>`
+        }
+        keyContainer.appendChild(div)
+
+        function QuestionCreator() {      
+          for (let i of questions) {  
+            let div = document.createElement("div");  
+            div.classList.add("qcontainer", "hide"); 
+            div.innerHTML += `<hr>`;               
+            let question_DIV = document.createElement("p");  
+            question_DIV.classList.add("question");             
+            question_DIV.innerHTML = `<button class='flag' style="width:75px; float:right;" title="حفظ" onclick="flagQues(this)"><img style="width:20px" src="/media/flag.svg"></button>`+i.question;
+            if (i.img) {
+              question_DIV.innerHTML += `<div style="text-align:center"><img style="width:300px" src="${i.img}"><div/>`
+            }
+            div.appendChild(question_DIV);    
+            if (i.answer) {
+              div.innerHTML += `<button class="move" style="width:200px" onclick="showAnswer()">انظر الإجابة وقيم نفسك</button>`;
+            }          
+            for (var op of i.options){
+              if (i.answer){
+                div.innerHTML += `<button class="option" style="width:10%" onclick="checker(this)">${op}</button>`;
+              } else if (!i.answer) {
+                div.innerHTML += `<button class="option" onclick="checker(this)">${op}</button>`;
+              }                          
+            }  
+            div.innerHTML += `<div class="answer hide"><p>${i.answer}</p></div>
+                              <div class="hint hide"><p>تنبيه: ${i.hint}</p></div>
+                              <div class="video hide" style="width:300px"><p>شاهد هذا المقطع لمزيد من التوضيح<a target="blank" title="فيديو" href=${i.video}><img style="width:30px" src="/media/video.svg"></a><p/></div><br><br>`;                      
+            quizContainer.appendChild(div); 
+          }              
+        }
+
+        function toQuizDisplay(keyOption){
+          qC = keyOption.innerText-1; 
+          quizDisplay(qC) 
+        }
+
+        function quizDisplay(qC) {
+          for (j=0; j<qL; j++){   
+            keys[j].classList.remove('bulb')
+            if (purpose === 'test' && questions[j].choice) {
+              keys[j].classList.add('answered')
+            } else if (purpose === 'pract') {
+              if (questions[j].choice){
+                if (questions[j].choice === questions[j].correct){
+                  keys[j].classList.add('correct')
+                } else {
+                  keys[j].classList.add('incorrect')
+                }
+              }
+            }
+          }
+          keys[qC].classList.add('bulb')
+          
+          if (qC === 0){
+            document.getElementById("next").classList.remove('hide');
+            document.getElementById("back").classList.add('hide');  
+                      
+          } else if (qC === qL-1){
+            document.getElementById("next").classList.add('hide');
+            document.getElementById("back").classList.remove('hide');
+          } else if (qC > 0){
+            document.getElementById("next").classList.remove('hide');
+            document.getElementById("back").classList.remove('hide'); 
+          }
+          if (purpose === 'test')
+          document.getElementById("report").classList.remove('hide');
+
+          for (i of questionList){
+            i.classList.add("hide");         
+          };
+          questionList[qC].classList.remove('hide');
+          if (questions[qC].flag === 1){
+            flags[qC].classList.add("flagged"); 
+          }           
+        };
+
+        function showAnswer() {
+          if (questions[qC].answer){
+            answers[qC].classList.remove("hide"); 
+            questionList[qC].querySelectorAll(".option").forEach((element) => {
+              element.disabled = false;
+            });
+          }
+          if (questions[qC].hint){
+            hints[qC].classList.remove("hide"); 
+          }
+          if (purpose === 'pract' && questions[qC].video){
+            videos[qC].classList.remove("hide"); 
+          }           
+        }
+
+        function checker(userOption) { 
+          let choice = userOption.innerText; 
+          let  options = questionList[qC].querySelectorAll(".option")
+          question = questions[qC];
+          if (choice === question.correct){
+            question.score = 1;
+          } else {
+            question.score = -1;
+          }
+          
+
+          if (!question.choice){
+            if (purpose === 'test'){
+              userOption.classList.add('selected')
+            } else {
+              if (choice === question.correct) {
+                userOption.classList.add('correct')
+              } else {
+                userOption.classList.add('incorrect')
+                options.forEach((element) => {
+                  if (element.innerText === question.correct){
+                    element.classList.add("correct");
+                  }            
+                });              
+              }
+              options.forEach((element) => {
+                element.disabled = true; 
+              });
+            }            
+            question.choice = choice;
+          } else {
+            if (choice === question.choice){
+              userOption.classList.remove('selected')
+              keys[qC].classList.remove('answered')
+              
+              question.choice = '';
+              question.score = 0;
+            } else {
+              options.forEach((element) => {
+                element.classList.remove("selected");
+              });
+            userOption.classList.add('selected')
+            question.choice = choice;
+            }
+          }
+          showAnswer()
+        }
+
+
+        function endTest() {
+          let unAnswered = [] ;
+          for(var j=0; j < qL; j++){
+            if (questions[j].choice === '') {
+              unAnswered.push(j+1);             
+            }; 
+          } 
+          if (unAnswered.length > 0) {
+            alert("الأسئلة التالية لم يتم حلها بعد: " + unAnswered);
+            qC = Math.min(...unAnswered)-1;  
+            quizDisplay(qC);
+          } else {
+            reportDisplay();
+          }
+        }
+
+        function reportDisplay() {
+          document.getElementById("back").classList.add('hide');
+          document.getElementById("report").classList.add('hide'); 
+          document.getElementById("submit").classList.remove('hide');  
+
+          for (j=0; j<qL; j++){   
+            keys[j].classList.add('hide')
+          }          
+          for (q of questions){
+            if (q.score === 1 && !q.answer){
+              totalScore += 1; 
+            }
+          }
+          let div = document.createElement("div");  
+          div.innerHTML += `${totalScore} <hr>  ${qL/2}`; 
+          fr = 2*totalScore/qL;  
+          if (fr > 0.9){
+            div.style.color = 'blue';
+          } else if (fr > 0.499){
+            div.style.color = 'green';
+          } else {
+            div.style.color = 'red';
+          }
+          scoreContainer.appendChild(div);
+          scoreContainer.style.fontSize='30px';
+          scoreContainer.classList.remove('hide'); 
+
+          document.getElementById('result').classList.remove('hide')
+          document.querySelectorAll('.mark').forEach((element) => {
+              element.classList.add("hide");
+          });
+          document.querySelectorAll('.move').forEach((element) => {
+              element.classList.add("hide");
+          });
+          for (j=0; j<qL; j++){            
+            questionList[j].classList.remove('hide');     
+            flags[j].classList.add('hide');            
+
+            questionList[j].querySelectorAll(".option").forEach((element) => {
+              if (questions[j].answer){
+                element.classList.add("hide");
+              } else {
+              element.classList.remove("selected");
+              if (element.innerText === questions[j].correct) {
+                element.classList.add("correct");                
+              } else if (element.innerText ===  questions[j].choice){
+                element.classList.add("incorrect");
+              }
+              element.disabled = true;
+            }
+            });
+            
+            
+            if (questions[j].hint){
+              hints[j].classList.remove("hide"); 
+            }
+            if (questions[j].video){
+              videos[j].classList.remove("hide"); 
+            }
+            
+          }          
+             
+        };
+
+
+        function initial() {
+            scoreContainer.innerHTML = "";   
+            quizContainer.innerHTML = "";   
+            qC = 0;              
+            scoreArray = new Array(qL); for (let i=0; i<3; ++i) scoreArray[i] = 0;   
+            document.getElementById("back").classList.add('hide');          
+            QuestionCreator();
+            quizDisplay(qC);            
+        }
+
+
+        window.onload = () => {
+          initial();  
+          displayContainer.classList.remove("hide");           
+        };  
+
+        function flagQues(flagOption) {
+          questions[qC].flagged = 1;
+          if (questions[qC].flag === 0) {
+            questions[qC].flag = 1
+            flagOption.classList.add("flagged");
+          } else {
+            questions[qC].flag = 0;
+            flagOption.classList.remove("flagged");
+          }      
+        }        
+
+        function nextQues() {            
+          qC += 1;          
+          quizDisplay(qC); 
+        }
+
+        function backQues() {
+          qC -= 1;                   
+          quizDisplay(qC); 
+        }
+
+        function Done() {
+          let output = []; 
+          for (j=0; j<qL; j++){
+            if (questions[j].choice ||  questions[j].flagged){
+              output.push(questions[j].k);
+              output.push(questions[j].score);            
+              output.push(questions[j].flag)
+            };
+          }
+          output.push(totalScore);
+          submitted.value = output
+        } 
+    </script>
+
+</body>
+</html>
+
+{% endblock content %}

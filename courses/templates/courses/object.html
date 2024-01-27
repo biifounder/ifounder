@@ -1,0 +1,143 @@
+{% extends 'courses/main.html' %}
+
+{% block content %}
+  <title>{{name}}</title> 
+
+  <style>
+
+  </style>
+
+
+  <div class="box" style="text-align:right; background-color: rgb(216, 214, 214);">
+    <h1>
+      {% if teacher %}
+        <span>  
+          <a style="width:30px; font-size:5px" title="تعديل" href="{% url 'update' k=k %}"><img style="width:30px" src="/media/edit.svg"></a>
+          <a style="width:30px; font-size:5px" title="حذف" href="{% url 'delete' k=k %}"><img style="width:30px" src="/media/delete.svg"></a>            
+        </span>  
+      {% endif %}
+      {% if teacher and not b == 'y' %}
+        <a style="width:30px; font-size:5px" title="{{gara}} {{grand}}" href="{% url 'home' %}"><img style="width:30px" src="/media/up.svg"></a>
+      {% elif not b == 'y'  %}
+        <a style="width:30px; font-size:5px" title="{{gara}} {{grand}}" href="{% url 'open' k=p %}"><img style="width:30px" src="/media/up.svg"></a>
+      {% endif %}
+      {% if ara == 'صف' %}الـ{% endif %}{{ara}}: {{name}}
+      <div style="float:left; font-size:20px">
+        {% if percent < 50 %}
+          <span style="color:black">% {{percent}} ضعيف</span>
+        {% elif percent < 70 %}
+          <span style="color:red">% {{percent}} متوسط</span>
+        {% elif percent < 80 %}
+          <span style="color:green">% {{percent}} جيد</span>
+        {% elif percent < 90 %}
+          <span style="color:blue">% {{percent}} جيد جدا</span>
+        {% elif percent < 101 %}
+          <span style="color:rgb(176, 0, 176)">% {{percent}} ممتاز</span>   
+        {% endif %}         
+      </div>
+    </h1>    
+    
+    <div style="text-align:center; font-size:20px">      
+      {% if not b == 'y' %}
+        <hr>
+        {% if reg %}            
+          <button style="width:90px" onclick='
+            if (confirm("إذا تم عرض الامتحان ولم تكمله حتى تقوم بإرسال النتيجة ستحتسب درجتك صفرا. اضغط ok إذا كنت تريد الاستمرار.")=== true){
+              window.location.href="{% url 'assessment' k=k %}" }'>اختبار</button>
+        {% else %}
+          <button style="width:90px" onclick="mustLogin()">اختبار</button>
+          {% if b == 's' %}
+            <a style="width:40px" href="{% url 'adduser' k=k %}" onclick="userAdded()">اشترك</a>
+          {%endif %}
+        {% endif %}  
+      {% endif %}  
+    </div>
+  </div>
+  <br>
+
+  {% if b == 's'%}  
+    <h2 style="color:red">نقاط ضعفك في  {{name}}</h2>
+    {% if reg %}      
+      <div class="box" style="max-height:200px; overflow:auto; text-align:right; border:1px solid #414141;">
+        {% if weaknesses  %}
+          {% for weak in weaknesses %}
+             <a style="font-size:20px" href="{% url 'open' k=weak.wk %}">{{weak.percent}}% - {{weak.name}}</a> <br>
+          {% endfor %}
+        {% else %}
+          <p>لا يوجد لديك نقاط ضعف في الوقت الحالي</p>
+        {% endif %}  
+        <p>text</p><p>text</p><p>text</p><p>text</p><p>text</p><p>text</p><p>text</p><p>text</p>
+      </div>
+    {% else %}
+      <div class="box" style="max-height:200px; overflow:auto; text-align:right; border:1px solid #414141;">
+        <p>تحديد نقاط الضعف في {{name}} ميزة متاحة فقط للمشتركين فيها</p>
+      </div>
+    {% endif %}
+  {% endif %}
+
+  
+
+  <div class="container">
+    <h1 style="color:black;">{{contents}}</h1>
+  </div>   
+
+
+  {% for child in children %} 
+    <div class="box" style=" background-color: rgb(234, 232, 232);">      
+      {% if teacher %}
+        <span style="float:right;">  
+          <a style="width:30px; font-size:5px" title="تعديل" href="{% url 'update' k=child.ck %}"><img style="width:30px" src="/media/edit.svg"></a>
+          <a style="width:30px; font-size:5px" title="حذف" href="{% url 'delete' k=child.ck %}"><img style="width:30px" src="/media/delete.svg"></a> 
+        </span>  
+      {% endif %} 
+      <a style="display:inline-block" href="{% url 'open' k=child.ck %}">{{child.cname}}</a>
+      <div style="float:left; font-size:20px">
+        {% if child.cpercent < 50 %}
+          <span style="color:black">% {{child.cpercent}} ضعيف</span>
+        {% elif child.cpercent < 70 %}
+          <span style="color:red">% {{child.cpercent}} متوسط</span>
+        {% elif child.cpercent < 80 %}
+          <span style="color:green">% {{child.cpercent}} جيد</span>
+        {% elif child.cpercent < 90 %}
+          <span style="color:blue">% {{child.cpercent}} جيد جدا</span>
+        {% elif child.cpercent < 101 %}
+          <span style="color:rgb(176, 0, 176)">% {{child.cpercent}} ممتاز</span>   
+        {% endif %} 
+      </div>
+      <hr>      
+      {% if b == 'l' %}
+        <a style="width:40px" href="{% url 'practice' k=child.ck %}">تدريب</a>  
+      {% endif %}
+      {% if child.creg %}            
+        <button style="width:90px" onclick='
+          if (confirm("إذا تم عرض الامتحان ولم تكمله حتى تقوم بإرسال النتيجة ستحتسب درجتك صفرا. اضغط ok إذا كنت تريد الاستمرار.")=== true){
+            window.location.href="{% url 'assessment' k=child.ck %}" }'>اختبار</button>
+      {% else %}
+        <button style="width:90px" onclick="mustLogin()">اختبار</button>
+        {% if b == 'y' %}
+          <a style="width:40px" href="{% url 'adduser' k=child.ck %}" onclick="userAdded()">اشترك</a> 
+        {% endif %}
+      {% endif %}
+    </div>      
+    <br>
+  {% endfor %}    
+    
+  <div class="container">
+    {% if teacher %}
+      <a style="background-color:#d8d8d8;" href="{% url 'create' p=k %}">إضافة {{cara}}</a>
+    {% endif %}
+
+  </div>
+
+<script>
+  function mustLogin() {
+    alert("الاختبار والتقييم والتوجيه ميزات غير متاحة في النسخة التجريبية");
+  }
+
+  function userAdded(){
+    alert('لقد تم تسجيلك في هذه المادة')
+  }
+</script>
+
+
+{% endblock %}
