@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class AzureContentConfig(AppConfig):
+class Courses(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'courses'
