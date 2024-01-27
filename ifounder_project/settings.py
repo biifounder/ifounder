@@ -40,7 +40,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'azure_project.urls'
+ROOT_URLCONF = 'ifounder_project.urls'
 
 TEMPLATES = [
     {
@@ -58,7 +58,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'azure_project.wsgi.application'
+WSGI_APPLICATION = 'ifounder_project.wsgi.application'
 
 
 # Database
