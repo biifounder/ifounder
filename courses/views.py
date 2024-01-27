@@ -39,6 +39,10 @@ class ProjectDeleteView(DeleteView):
     success_url ="/"
 
 
+
+
+
+
 def is_teacher(request): 
     if request.user.is_authenticated :  
         if request.user.email in  ['bahaaismailres@gmail.com','moslem@gmail.com'] : 

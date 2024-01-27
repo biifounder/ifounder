@@ -4,13 +4,13 @@ from .views import *
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
-    path('', HomeView.as_view(), name="home"),
+#     path('', HomeView.as_view(), name="home"),
     path('about/', AboutView.as_view(),name="about"),
     path('create/', ProjectCreateView.as_view(),name="create"),
     path('edit/<int:pk>', ProjectEditView.as_view(),name="edit"),
-    path('delete/<int:pk>', ProjectDeleteView.as_view(),name="delete"),
+#     path('delete/<int:pk>', ProjectDeleteView.as_view(),name="delete"),
 
-    # path("", views.HomePage, name='home'),
+    path("", views.HomePage, name='home'),
 
     path('logout/',views.Logout,name='logout'),
     path('password-reset/', auth_views.PasswordResetView.as_view(
@@ -30,7 +30,7 @@ urlpatterns = [
     path("create/<str:p>/", views.Create, name='create'),
     path("update/<str:k>/", views.Update, name='update'),
     path("dublicate/<str:k>/", views.Dublicate, name='dublicate'),
-    # path("delete/<str:k>/", views.Delete, name='delete'),
+    path("delete/<str:k>/", views.Delete, name='delete'),
     path("adduser/<str:k>", views.AddUser, name='adduser'),
     path("practice/<str:k>/", views.Practice, name='practice'),
     path("assessment/<str:k>/", views.Assessment, name='assessment'),
