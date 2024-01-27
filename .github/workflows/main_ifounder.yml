@@ -28,7 +28,7 @@ jobs:
           source venv/bin/activate
       
       - name: Install dependencies
-        run: manage.py collectstatic
+        run: python manage.py collectstatic
         
       - name: Run collecstatic
         run: python manage.py collectstatic
