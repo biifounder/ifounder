@@ -45,7 +45,7 @@ class ProjectDeleteView(DeleteView):
 
 def is_teacher(request): 
     if request.user.is_authenticated :  
-        if request.user.email in  ['bahaaismailres@gmail.com','moslem@gmail.com'] : 
+        if request.user.email in  ['bahaaismailres@gmail.com','biifounder@gmail.com'] : 
             return request.user.username 
     return False
 
