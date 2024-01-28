@@ -1,5 +1,6 @@
 
 {% extends 'courses/main.html' %}
+{% load static %}
 
 {% block content %}
   <head>
@@ -29,15 +30,15 @@
     <h1>
       {% if teacher %}
         <span>  
-          <a style="width:30px; font-size:5px" title="تعديل" href="{% url 'update' k=object.k %}"><img style="width:30px" src="/media/edit.svg"></a>
-          <a style="width:30px; font-size:5px" title="حذف" href="{% url 'delete' k=object.k %}"><img style="width:30px" src="/media/delete.svg"></a>
+          <a style="width:30px; font-size:5px" title="تعديل" href="{% url 'update' k=object.k %}"><img style="width:30px" src="{% static 'courses/edit.svg' %}"></a>
+          <a style="width:30px; font-size:5px" title="حذف" href="{% url 'delete' k=object.k %}"><img style="width:30px" src="{% static 'courses/delete.svg' %}"></a>
         </span>  
       {% endif %}
 
-      <a style="width:30px; font-size:5px" title="{{gara}} {{grand}}" href="{% url 'open' k=p %}"><img style="width:30px" src="/media/up.svg">
+      <a style="width:30px; font-size:5px" title="{{gara}} {{grand}}" href="{% url 'open' k=p %}"><img style="width:30px" src="{% static 'courses/up.svg' %}">
       </a>
       {% if object.video %} 
-        <a style="width:30px; font-size:5px" target="blank" title="فيديو" href="{{object.video}}"><img style="width:30px" src="/media/video.svg"></a> 
+        <a style="width:30px; font-size:5px" target="blank" title="فيديو" href="{{object.video}}"><img style="width:30px" src="{% static 'courses/video.svg' %}"></a> 
       {% endif %}      
       {{object.name}}
     </h1>
@@ -93,10 +94,10 @@
         </div>
         {% endif %}
         <p style="color:red">
-        <a style="width:30px; font-size:5px" title="تعديل" href="{% url 'update' k=q.k %}"><img style="width:30px" src="/media/edit.svg"></a>
-        <a style="width:30px; font-size:5px" title="حذف" href="{% url 'delete' k=q.k %}"><img style="width:30px" src="/media/delete.svg"></a>
+        <a style="width:30px; font-size:5px" title="تعديل" href="{% url 'update' k=q.k %}"><img style="width:30px" src="{% static 'courses/edit.svg' %}"></a>
+        <a style="width:30px; font-size:5px" title="حذف" href="{% url 'delete' k=q.k %}"><img style="width:30px" src="{% static 'courses/delete.svg' %}"></a>
         {{q.level}}     
-        {% if q.video%}<a style="width:30px; font-size:5px" target="blank" title="فيديو" href="{{q.video}}"><img style="width:30px" src="/media/video.svg"></a>{% endif %}               
+        {% if q.video%}<a style="width:30px; font-size:5px" target="blank" title="فيديو" href="{{q.video}}"><img style="width:30px" src="{% static 'courses/video.svg' %}"></a>{% endif %}               
         {{q.name}}</p>
         {% if q.img %}<div style="text-align:center;"><img style="width: 50%;" src="{{ q.img.url }}" alt="an image"></div>{% endif %} 
         <p>{{q.op1}}</p>

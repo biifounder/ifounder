@@ -1,4 +1,6 @@
 {% extends 'courses/main.html' %}
+{% load static %}
+
 {% block content %}
 
 <!DOCTYPE html>
@@ -41,7 +43,7 @@
                 <a style="width:35%; background-color:rgb(205, 205, 252)" href="{% url 'create' p='home' %}">أضف صفا دراسيا</a>                
             {% endif %}
         {% else %}            
-            <div><img style="width:250px" src="/media/logo.svg"></div>
+            <div><img style="width:250px" src="{% static 'courses/logo.svg' %}"></div>
             <div>
                 <p>المؤسس التفاعلي يقيمك ويقومك، وينتقي من الأسئلة ما يناسبك</p>
                 <p>حتى يرتقي بك تدريجيا من الصفر إلى قمة التفوق</p>  

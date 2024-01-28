@@ -1,4 +1,5 @@
 {% extends 'courses/main.html' %}
+{% load static %}
 
 {% block content %}
 
@@ -138,7 +139,7 @@
             div.innerHTML += `<hr>`;               
             let question_DIV = document.createElement("p");  
             question_DIV.classList.add("question");             
-            question_DIV.innerHTML = `<button class='flag' style="width:75px; float:right;" title="حفظ" onclick="flagQues(this)"><img style="width:20px" src="/media/flag.svg"></button>`+i.question;
+            question_DIV.innerHTML = `<button class='flag' style="width:75px; float:right;" title="حفظ" onclick="flagQues(this)"><img style="width:20px" src="{% static 'courses/flag.svg' %}"></button>`+i.question;
             if (i.img) {
               question_DIV.innerHTML += `<div style="text-align:center"><img style="width:300px" src="${i.img}"><div/>`
             }
@@ -155,7 +156,7 @@
             }  
             div.innerHTML += `<div class="answer hide"><p>${i.answer}</p></div>
                               <div class="hint hide"><p>تنبيه: ${i.hint}</p></div>
-                              <div class="video hide" style="width:300px"><p>شاهد هذا المقطع لمزيد من التوضيح<a target="blank" title="فيديو" href=${i.video}><img style="width:30px" src="/media/video.svg"></a><p/></div><br><br>`;                      
+                              <div class="video hide" style="width:300px"><p>شاهد هذا المقطع لمزيد من التوضيح<a target="blank" title="فيديو" href=${i.video}><img style="width:30px" src="{% static 'courses/video.svg' %}"></a><p/></div><br><br>`;                      
             quizContainer.appendChild(div); 
           }              
         }

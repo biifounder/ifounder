@@ -1,4 +1,5 @@
 {% load static %}
+
 <html dir="rtl">
 
 <head>    
@@ -79,10 +80,10 @@
 
 <body>
     <nav class="container">
-        <p><a style="width:8rem; font-size:17;" href="{% url 'home' %}">المؤسس التفاعلي<img style="width:30px" src="/media/logo.svg"></a>
+        <p><a style="width:8rem; font-size:17;" href="{% url 'home' %}">المؤسس التفاعلي<img style="width:30px" src="{% static 'courses/logo.svg' %}"></a>
         {% if request.user.is_authenticated %}
         {{request.user.name}}
-        <a style="width:5rem; font-size:17;" href="{% url 'logout' %}"> خروج    <img style="width:30px" src="/media/logout.svg"></a>
+        <a style="width:5rem; font-size:17;" href="{% url 'logout' %}"> خروج    <img style="width:30px" src="{% static 'courses/logout.svg' %}"></a>
         {% endif %}
     </p> 
     </nav>
